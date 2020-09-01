@@ -3,9 +3,10 @@ import pathlib
 
 node_a = "\"A\" \"B,C\" \"7,20\""
 node_b = "\"B\" \"A,C\" \"7,10\""
-node_c = "\"C\" \"B,A\" \"10,20\""
+node_c = "\"C\" \"B,A,D\" \"10,20,7\""
+node_d = "\"D\" \"C\" \"7\""
 
-nodes = [node_a, node_b, node_c]
+nodes = [node_a, node_b, node_c, node_d]
 
 net_node = pathlib.Path("network_node.py").absolute()
 net_node = os.path.join(net_node)

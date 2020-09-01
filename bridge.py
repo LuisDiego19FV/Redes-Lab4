@@ -8,7 +8,7 @@ PORT = 9999
 # PORT = 22
 
 # Default Timeout
-socket.setdefaulttimeout(60)
+socket.setdefaulttimeout(120)
 
 # Mount host & listen
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,9 +22,6 @@ print("Listening...")
 nodes = {}
 
 while True:
-
-    # Connected nodes
-    print(nodes)
 
     # Conection
     conn, addr = s.accept()
@@ -60,6 +57,35 @@ while True:
         msg = {"action":"sent_msg_flood", "original_node":original_node,\
             "from_nodes":from_nodes, "destination":destination, "msg":message}
         msg = pickle.dumps(msg)
+
+        # Sent message to node
+        conn_to_node = nodes[to_node]
+        conn_to_node.sendall(msg)
+
+    # Redirect dvector message
+    elif act == "sent_msg_dvector":
+        # Arguments
+        original_node = data["original_node"]
+        to_node = data["to_node"]
+        destination = data["destination"]
+        message = data["msg"]
+
+        # Complete message
+        msg = {"action":"sent_msg_dvector", "original_node":original_node,\
+            "destination":destination, "msg":message}
+        msg = pickle.dumps(msg)
+
+        # Sent message to node
+        conn_to_node = nodes[to_node]
+        conn_to_node.sendall(msg)
+
+    # Redirect table to node
+    elif act == "dist_table":
+        # Node to sent to
+        to_node = data["to_node"]
+
+        # Message
+        msg = pickle.dumps(data)
 
         # Sent message to node
         conn_to_node = nodes[to_node]
