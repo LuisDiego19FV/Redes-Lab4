@@ -12,7 +12,7 @@ node_h = "\"H\" \"F\" \"4\""
 node_i = "\"I\" \"A,D\" \"2,6\""
 
 nodes = [node_a, node_b, node_c,\
-        node_d, node_e, node_f, \
+         node_d, node_e, node_f, \
         node_g, node_h, node_i]
 
 net_node = pathlib.Path("network_node.py").absolute()
