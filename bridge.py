@@ -8,7 +8,7 @@ PORT = 9999
 # PORT = 22
 
 # Default Timeout
-socket.setdefaulttimeout(120)
+socket.setdefaulttimeout(240)
 
 # Mount host & listen
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,6 +20,9 @@ print("Listening...")
 
 # Stores each node and it's connection
 nodes = {}
+
+# Store messages in stack
+messages_to_sent = []
 
 while True:
 
@@ -43,24 +46,48 @@ while True:
     # Recognition of connection
     if act == "recognition":
         nodes[str(data["id"])] = conn
+        nodes[str(data["id"])+"_status"] = True
+
+        un_sent_messages = []
+        for msg in messages_to_sent:
+            print(msg)
+            to_node = msg["to_node"]
+
+            if nodes[to_node + "_status"]:
+                msg = pickle.dumps(msg)
+                conn_to_node = nodes[to_node]
+                conn_to_node.sendall(msg)
+
+                nodes[to_node + "_status"] = False
+
+                print("renegate sent")
+            else:
+                un_sent_messages.append(msg)
+
+        messages_to_sent = un_sent_messages
 
     # Redirect flooding message
     elif act == "sent_msg_flood":
         # Arguments
         original_node = data["original_node"]
         from_nodes = data["from_nodes"]
-        to_node = data["to_node"]
         destination = data["destination"]
         message = data["msg"]
+        to_node = data["to_node"]
 
         # Complete message
         msg = {"action":"sent_msg_flood", "original_node":original_node,\
-            "from_nodes":from_nodes, "destination":destination, "msg":message}
-        msg = pickle.dumps(msg)
+            "from_nodes":from_nodes, "destination":destination, "msg":message, "to_node":to_node}
 
-        # Sent message to node
-        conn_to_node = nodes[to_node]
-        conn_to_node.sendall(msg)
+        # Sent message to node if connection is active
+        if  nodes[to_node + "_status"]:
+            msg = pickle.dumps(msg)
+            conn_to_node = nodes[to_node]
+            conn_to_node.sendall(msg)
+
+            nodes[to_node + "_status"] = False
+        else:
+            messages_to_sent.append(msg)
 
     # Redirect dvector message
     elif act == "sent_msg_dvector":
@@ -72,12 +99,17 @@ while True:
 
         # Complete message
         msg = {"action":"sent_msg_dvector", "original_node":original_node,\
-            "destination":destination, "msg":message}
-        msg = pickle.dumps(msg)
+            "destination":destination, "msg":message, "to_node":to_node}
 
-        # Sent message to node
-        conn_to_node = nodes[to_node]
-        conn_to_node.sendall(msg)
+        # Sent message to node if connection is active
+        if  nodes[to_node + "_status"]:
+            msg = pickle.dumps(msg)
+            conn_to_node = nodes[to_node]
+            conn_to_node.sendall(msg)
+
+            nodes[to_node + "_status"] = False
+        else:
+            messages_to_sent.append(msg)
 
     # Redirect lstate message
     elif act == "sent_msg_lstate":
@@ -89,24 +121,33 @@ while True:
 
         # Complete message
         msg = {"action":"sent_msg_lstate", "original_node":original_node,\
-            "destination":destination, "msg":message}
+            "destination":destination, "msg":message, "to_node":to_node}
         msg = pickle.dumps(msg)
 
-        # Sent message to node
-        conn_to_node = nodes[to_node]
-        conn_to_node.sendall(msg)
+        # Sent message to node if connection is active
+        if  nodes[to_node + "_status"]:
+            msg = pickle.dumps(data)
+            conn_to_node = nodes[to_node]
+            conn_to_node.sendall(msg)
+
+            nodes[to_node + "_status"] = False
+        else:
+            messages_to_sent.append(data)
 
     # Redirect table to node
     elif act == "dist_table":
         # Node to sent to
         to_node = data["to_node"]
 
-        # Message
-        msg = pickle.dumps(data)
+        # Sent message to node if connection is active
+        if  nodes[to_node + "_status"]:
+            msg = pickle.dumps(data)
+            conn_to_node = nodes[to_node]
+            conn_to_node.sendall(msg)
 
-        # Sent message to node
-        conn_to_node = nodes[to_node]
-        conn_to_node.sendall(msg)
+            nodes[to_node + "_status"] = False
+        else:
+            messages_to_sent.append(data)
 
     # Kill server
     elif act == "kill_server":
