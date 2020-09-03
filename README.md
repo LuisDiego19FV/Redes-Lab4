@@ -22,9 +22,9 @@ Para correr el programa:
     
     example:
     
-    python network_node.py A "B,C,F" "1,2,7"
+    python network_node.py "A" "B,C,F" "1,2,7"
     
 ```
 - Para ver que comandos se deberían de correr para crear la red propuesta en el Lab4.txt, cada uno en diferente terminal, chequear el archivo command_network.txt
-- Si se tiene windows y se quiere correr todos los nodos para crear la red propuesta en el Lab4.txt dentro de la misma maquina, correr el programa network.py sin ningun.
+- Si se tiene windows y se quiere correr todos los nodos para crear la red propuesta en el Lab4.txt dentro de la misma maquina, correr el programa windows_run_all.py sin ningun. Si no se tendra que correr cada nodo en una terminal diferente cada uno.
 
