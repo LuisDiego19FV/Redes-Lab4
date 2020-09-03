@@ -2,10 +2,10 @@ import socket
 import pickle 
 
 # host and port to sent data
-HOST = '127.0.0.1'
-PORT = 9999
-# HOST = socket.gethostname() 
-# PORT = 22
+# HOST = '127.0.0.1'
+# PORT = 9999
+HOST = socket.gethostname() 
+PORT = 22
 
 # Default Timeout
 socket.setdefaulttimeout(240)
