@@ -1,0 +1,5 @@
+Server redirecting message whitelog_dvector.txt method:
+ Msg: Hola F
+ Destination: F Redirected to:DServer redirecting message whitelog_dvector.txt method:
+ Msg: Hola F
+ Destination: F Redirected to:F

@@ -1,5 +1,6 @@
 import socket
 import pickle 
+import bridge_logger as bl
 
 # host and port to sent data
 # HOST = '127.0.0.1'
@@ -8,7 +9,7 @@ HOST = socket.gethostname()
 PORT = 22
 
 # Default Timeout
-socket.setdefaulttimeout(240)
+socket.setdefaulttimeout(600)
 
 # Mount host & listen
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,6 +24,9 @@ nodes = {}
 
 # Store messages in stack
 messages_to_sent = []
+
+# Reset logs
+bl.reset_all_files()
 
 while True:
 
@@ -89,6 +93,9 @@ while True:
         else:
             messages_to_sent.append(msg)
 
+        # Log info
+        bl.write_to_file("log_flooding.txt", message, to_node, destination)
+
     # Redirect dvector message
     elif act == "sent_msg_dvector":
         # Arguments
@@ -110,6 +117,9 @@ while True:
             nodes[to_node + "_status"] = False
         else:
             messages_to_sent.append(msg)
+
+        # Log info
+        bl.write_to_file("log_dvector.txt", message, to_node, destination)
 
     # Redirect lstate message
     elif act == "sent_msg_lstate":
@@ -133,6 +143,9 @@ while True:
             nodes[to_node + "_status"] = False
         else:
             messages_to_sent.append(data)
+
+        # Log info
+        bl.write_to_file("log_lstate.txt", message, to_node, destination)
 
     # Redirect table to node
     elif act == "dist_table":
