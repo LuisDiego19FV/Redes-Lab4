@@ -44,6 +44,46 @@ node = {"id":n_id, "neighbors":n_neighbors, "weights":n_w}
 stop_threads = False
 stop_table_sync = False
 
+
+class Node:
+  
+    def __init__(self, data, indexloc = None):
+        self.data = data
+        self.index = indexloc
+        
+class Graph:
+    @classmethod
+    def create_from_nodes(self, nodes):
+        return Graph(len(nodes), len(nodes), nodes)
+
+    def __init__(self, row, col, nodes = None):
+        self.adj_mat = [[0] * col for _ in range(row)]
+        self.nodes = nodes
+        for i in range(len(self.nodes)):
+            self.nodes[i].index = i
+
+    def connect_dir(self, node1, node2, weight):
+        node1, node2 = self.get_index_from_node(node1), self.get_index_from_node(node2)
+        self.adj_mat[node1][node2] = weight
+  
+    def connect(self, node1, node2, weight):
+        self.connect_dir(node1, node2, weight)
+        self.connect_dir(node2, node1, weight)
+
+    def connections_from(self, node):
+        node = self.get_index_from_node(node)
+        return [(self.nodes[col_num], self.adj_mat[node][col_num]) for col_num in range(len(self.adj_mat[node])) if self.adj_mat[node][col_num] != 0]
+   
+    def get_index_from_node(self, node):
+        if not isinstance(node, Node) and not isinstance(node, int):
+            raise ValueError("node must be an integer or a Node object")
+        if isinstance(node, int):
+            return node
+        else:
+            return node.index
+
+# def state_message(mensaje, destino, original):
+
 # Distance vector table creation
 def vector_table_creation():
     # Prepare neighbors
@@ -106,6 +146,78 @@ def distance_vector(route, destination, actual, avoid, weight = 0):
     shortest_way = sorted(shortest_way, key=itemgetter(1))
 
     return shortest_way[0]
+
+# Link state message function
+def state_message(node):
+    # Cuando mando a llamar a state_message en la linea 363  tira error que a no esta definida (el a de la linea 154) 
+
+    graph = Graph.create_from_nodes([a,b,c,d,e,f,g,h])
+    graph.connect(a,b,7)
+    graph.connect(a,i,2)
+    graph.connect(a,c,7)
+    graph.connect(b,f,2)
+    graph.connect(c,d,5)
+    graph.connect(d,f,2)
+    graph.connect(d,i,6)
+    graph.connect(d,e,3)
+    graph.connect(e,g,4)
+    graph.connect(f,h,4)
+    graph.connect(f,g,3)
+
+    nodenum = graph.get_index_from_node(node)
+    dist = [None] * len(graph.nodes)
+    for i in range(len(dist)):
+        dist[i] = [float("inf")]
+        dist[i].append([graph.nodes[nodenum]])
+
+    dist[nodenum][0] = 0
+    queue = [i for i in range(len(graph.nodes))]
+    seen = set()
+    while len(queue) > 0:
+        min_dist = float("inf")
+        min_node = None
+        for n in queue: 
+            if dist[n][0] < min_dist and n not in seen:
+                min_dist = dist[n][0]
+                min_node = n
+        
+        queue.remove(min_node)
+        seen.add(min_node)
+        connections = graph.connections_from(min_node)
+        for (node, weight) in connections:
+            tot_dist = weight + min_dist
+            if tot_dist < dist[node.index][0]:
+                dist[node.index][0] = tot_dist
+                dist[node.index][1] = list(dist[min_node][1])
+                dist[node.index][1].append(node)
+                if node.index == 1:
+                    print("Sending message through path: " + "A" + ", total weight: " + str(weight))
+                if node.index == 2:
+                    print("Sending message through path: " + "B" + ", total weight: " + str(weight)) 
+                if node.index == 3:
+                    print("Sending message through path: " + "C" + ", total weight: " + str(weight)) 
+                if node.index == 4:
+                    print("Sending message through path: " + "D" + ", total weight: " + str(weight)) 
+                if node.index == 5:
+                    print("Sending message through path: " + "E" + ", total weight: " + str(weight)) 
+                if node.index == 6:
+                    print("Sending message through path: " + "F" + ", total weight: " + str(weight)) 
+                if node.index == 7:
+                    print("Sending message through path: " + "G" + ", total weight: " + str(weight)) 
+                if node.index == 8:
+                    print("Sending message through path: " + "H" + ", total weight: " + str(weight))          
+
+        return dist
+
+    # Connect to bridge
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+    s.connect((HOST, PORT))
+
+    msg = pickle.dumps(msg)
+
+    # sent message and add delay
+    s.sendall(msg)
+    sleep(TIME_MULT * 0.01)
 
 
 # Distance vector message function
@@ -204,7 +316,7 @@ Node menu
             if mi == 1:
                 print("Choose a method for sending the message:")
                 try:
-                    meth = int(input("1. Flooding \n2. Distance Vector \n") )
+                    meth = int(input("1. Flooding \n2. Distance Vector \n3. Link state \n") )
                 except:
                     print("Enter option in menu")
 
@@ -227,6 +339,28 @@ Node menu
                         destination = str(input("Enter message's destination: ") )
 
                         vector_message(message, destination, node["id"], original)
+
+                # By distance vector algorithm
+                if meth == 3:
+                    if len(network_table) == 1:
+                        print("Router table needs syncronization")
+                        print("Or network needs more than one node")
+                    else:
+                        original = node["id"]
+                        message = str(input("Enter your message: ") )
+                        destination = str(input("Enter message's destination: ") )
+
+                        a = Node("A")
+                        b = Node("B")
+                        c = Node("C")
+                        d = Node("D")
+                        e = Node("E")
+                        f = Node("F")
+                        g = Node("G")
+                        h = Node("H")
+                        i = Node("I")
+
+                        state_message(a)
 
             # Option 2, sync network table
             elif mi == 2:

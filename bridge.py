@@ -79,6 +79,23 @@ while True:
         conn_to_node = nodes[to_node]
         conn_to_node.sendall(msg)
 
+    # Redirect lstate message
+    elif act == "sent_msg_lstate":
+        # Arguments
+        original_node = data["original_node"]
+        to_node = data["to_node"]
+        destination = data["destination"]
+        message = data["msg"]
+
+        # Complete message
+        msg = {"action":"sent_msg_lstate", "original_node":original_node,\
+            "destination":destination, "msg":message}
+        msg = pickle.dumps(msg)
+
+        # Sent message to node
+        conn_to_node = nodes[to_node]
+        conn_to_node.sendall(msg)
+
     # Redirect table to node
     elif act == "dist_table":
         # Node to sent to
