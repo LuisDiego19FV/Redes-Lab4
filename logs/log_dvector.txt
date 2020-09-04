@@ -1,0 +1,16 @@
+Server redirecting message with log_dvector.txt method:
+ Msg: A
+ Destination: A
+ Redirected to:F
+Server redirecting message with log_dvector.txt method:
+ Msg: A
+ Destination: A
+ Redirected to:D
+Server redirecting message with log_dvector.txt method:
+ Msg: A
+ Destination: A
+ Redirected to:C
+Server redirecting message with log_dvector.txt method:
+ Msg: A
+ Destination: A
+ Redirected to:A

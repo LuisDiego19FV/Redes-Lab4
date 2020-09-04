@@ -9,10 +9,10 @@ from node_classes import Graph
 from node_classes import Node
 
 # Host and port of bridge
-HOST = '127.0.0.1'
-PORT = 9999
-# HOST = 'redesgameserver.eastus.cloudapp.azure.com' 
-# PORT = 22
+# HOST = '127.0.0.1'
+# PORT = 9999
+HOST = 'redesgameserver.eastus.cloudapp.azure.com' 
+PORT = 22
 
 # Time wait multiplier
 TIME_MULT = 1
