@@ -9,10 +9,10 @@ from node_classes import Graph
 from node_classes import Node
 
 # Host and port of bridge
-# HOST = '127.0.0.1'
-# PORT = 9999
-HOST = 'redesgameserver.eastus.cloudapp.azure.com' 
-PORT = 22
+HOST = '127.0.0.1'
+PORT = 9999
+# HOST = 'redesgameserver.eastus.cloudapp.azure.com' 
+# PORT = 22
 
 # Time wait multiplier
 TIME_MULT = 1
@@ -229,7 +229,13 @@ def state_message(msg, destination, original):
     # Get node to sent message trough
     to_node = str(shortest_way[1][1].data)  
 
-    print("Sending message to: " + destination + "from node " + node["id"] + " to node" + to_node)
+    # Get path
+    tmp_path = ""
+    for i in shortest_way[1]:
+        tmp_path += i.data + " - " 
+
+    print("Sending message to: " + destination + " from node " + node["id"] + " to node " + to_node)
+    print("Complete path: " + str(tmp_path))
 
     # Prepare message to sent
     msg = {"action":"sent_msg_lstate", "original_node":original, \
